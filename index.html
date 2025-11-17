@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prasiddha Shrestha - Full Stack Developer & Data Scientist</title>
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    
+    <!-- Core Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.7.0/p5.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.4/dist/js/splide.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.4/dist/css/splide.min.css" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'navy': '#1a1f36',
+                        'teal': '#4a9b8e',
+                        'gold': '#d4af37',
+                        'charcoal': '#2c3e50'
+                    },
+                    fontFamily: {
+                        'display': ['Playfair Display', 'serif'],
+                        'body': ['Inter', 'sans-serif'],
+                        'mono': ['JetBrains Mono', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        body { 
+            background: linear-gradient(135deg, #1a1f36 0%, #2c3e50 100%);
+            min-height: 100vh;
+        }
+        
+        .hero-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+        
+        .skill-card {
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+        
+        .skill-card:hover {
+            transform: translateY(-8px) rotateX(5deg);
+            box-shadow: 0 20px 40px rgba(74, 155, 142, 0.3);
+        }
+        
+        .gradient-text {
+            background: linear-gradient(45deg, #4a9b8e, #d4af37);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .timeline-item {
+            opacity: 0;
+            transform: translateX(50px);
+        }
+        
+        .timeline-item.animate {
+            opacity: 1;
+            transform: translateX(0);
+        }
+        
+        .particle-container {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .code-editor {
+            background: #0d1117;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        
+        .code-header {
+            background: #161b22;
+            padding: 12px 16px;
+            border-bottom: 1px solid #30363d;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .code-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+        
+        .dot-red { background: #ff5f56; }
+        .dot-yellow { background: #ffbd2e; }
+        .dot-green { background: #27ca3f; }
+        
+        .code-content {
+            padding: 20px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 14px;
+            line-height: 1.6;
+            color: #e6edf3;
+        }
+        
+        .syntax-keyword { color: #ff7b72; }
+        .syntax-string { color: #a5d6ff; }
+        .syntax-comment { color: #8b949e; }
+        .syntax-function { color: #d2a8ff; }
+        
+        .floating-element {
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+        
+        .nav-link {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: -100%;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, #4a9b8e, #d4af37);
+            transition: left 0.3s ease;
+        }
+        
+        .nav-link:hover::after {
+            left: 0;
+        }
+    </style>
+</head>
+<body class="font-body text-white">
+    <!-- Navigation -->
+    <nav class="fixed top-0 left-0 right-0 z-50 bg-navy/80 backdrop-blur-md border-b border-teal/20">
+        <div class="max-w-7xl mx-auto px-6 py-4">
+            <div class="flex items-center justify-between">
+                <div class="font-display text-2xl font-bold gradient-text">
+                    Prasiddha Shrestha
+                </div>
+                <div class="hidden md:flex space-x-8">
+                    <a href="#home" class="nav-link text-white hover:text-teal transition-colors">Home</a>
+                    <a href="about.html" class="nav-link text-white hover:text-teal transition-colors">About</a>
+                    <a href="projects.html" class="nav-link text-white hover:text-teal transition-colors">Projects</a>
+                    <a href="contact.html" class="nav-link text-white hover:text-teal transition-colors">Contact</a>
+                </div>
+                <button class="md:hidden text-white">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="min-h-screen flex items-center relative particle-container">
+        <div id="particles-canvas" class="hero-bg"></div>
+        
+        <div class="max-w-7xl mx-auto px-6 py-20 grid md:grid-cols-2 gap-12 items-center">
+            <div class="space-y-8">
+                <div class="space-y-4">
+                    <h1 class="font-display text-5xl md:text-7xl font-bold leading-tight">
+                        <span class="gradient-text">Full Stack</span><br>
+                        <span class="text-white">Developer</span><br>
+                        <span class="text-teal">& Data Scientist</span>
+                    </h1>
+                    <p class="text-xl text-gray-300 leading-relaxed max-w-lg">
+                        Transforming complex data into actionable insights through innovative technology. 
+                        Specializing in iOS development, spatial analysis, and economic research.
+                    </p>
+                </div>
+                
+                <div class="flex flex-wrap gap-4">
+                    <button onclick="scrollToSection('skills')" class="bg-teal hover:bg-teal/90 text-white px-8 py-3 rounded-lg font-medium transition-all transform hover:scale-105">
+                        Explore Skills
+                    </button>
+                    <button onclick="scrollToSection('projects')" class="border border-teal text-teal hover:bg-teal hover:text-white px-8 py-3 rounded-lg font-medium transition-all">
+                        View Projects
+                    </button>
+                </div>
+                
+                <div class="flex items-center space-x-6 text-sm text-gray-400">
+                    <span class="flex items-center">
+                        <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"></path>
+                        </svg>
+                        Minneapolis, MN
+                    </span>
+                    <span class="flex items-center">
+                        <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"></path>
+                            <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"></path>
+                        </svg>
+                        prasiddha.shrestha.09@gmail.com
+                    </span>
+                </div>
+            </div>
+            
+            <div class="relative">
+                <div class="floating-element">
+                    <img src="resources/prasiddha-linkedin.jpeg" alt="Prasiddha Shrestha" 
+                         class="w-full max-w-md mx-auto rounded-2xl shadow-2xl">
+                </div>
+                <div class="absolute -top-4 -right-4 w-24 h-24 bg-teal/20 rounded-full blur-xl"></div>
+                <div class="absolute -bottom-4 -left-4 w-32 h-32 bg-gold/20 rounded-full blur-xl"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Skills Matrix Section -->
+    <section id="skills" class="py-20 relative">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="text-center mb-16">
+                <h2 class="font-display text-4xl md:text-5xl font-bold mb-6">
+                    <span class="gradient-text">Technical Expertise</span>
+                </h2>
+                <p class="text-xl text-gray-300 max-w-3xl mx-auto">
+                    A comprehensive skill set spanning full-stack development, data science, and research analytics
+                </p>
+            </div>
+            
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
+                <!-- Programming Languages -->
+                <div class="skill-card bg-white/10 p-8 rounded-xl border border-white/20">
+                    <div class="flex items-center mb-4">
+                        <div class="w-12 h-12 bg-teal/20 rounded-lg flex items-center justify-center mr-4">
+                            <svg class="w-6 h-6 text-teal" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M12.316 3.051a1 1 0 01.633 1.265l-4 12a1 1 0 11-1.898-.632l4-12a1 1 0 011.265-.633zM5.707 6.293a1 1 0 010 1.414L3.414 10l2.293 2.293a1 1 0 11-1.414 1.414l-3-3a1 1 0 010-1.414l3-3a1 1 0 011.414 0zm8.586 0a1 1 0 011.414 0l3 3a1 1 0 010 1.414l-3 3a1 1 0 11-1.414-1.414L16.586 10l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                            </svg>
+                        </div>
+                        <h3 class="text-xl font-semibold">Programming</h3>
+                    </div>
+                    <div class="space-y-3">
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-300">Python</span>
+                            <div class="w-24 h-2 bg-gray-700 rounded-full">
+                                <div class="w-20 h-2 bg-teal rounded-full"></div>
+                            </div>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-300">Swift (iOS)</span>
+                            <div class="w-24 h-2 bg-gray-700 rounded-full">
+                                <div class="w-18 h-2 bg-teal rounded-full"></div>
+                            </div>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-300">JavaScript</span>
+                            <div class="w-24 h-2 bg-gray-700 rounded-full">
+                                <div class="w-16 h-2 bg-teal rounded-full"></div>
+                            </div>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-300">R</span>
+                            <div class="w-24 h-2 bg-gray-700 rounded-full">
+                                <div class="w-16 h-2 bg-teal rounded-full"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Data Science -->
+                <div class="skill-card bg-white/10 p-8 rounded-xl border border-white/20">
+                    <div class="flex items-center mb-4">
+                        <div class="w-12 h-12 bg-teal/20 rounded-lg flex items-center justify-center mr-4">
+                            <svg class="w-6 h-6 text-teal" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5zM8 7a1 1 0 011-1h2a1 1 0 011 1v9a1 1 0 01-1 1H9a1 1 0 01-1-1V7zM14 4a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1h-2a1 1 0 01-1-1V4z"></path>
+                            </svg>
+                        </div>
+                        <h3 class="text-xl font-semibold">Data Science</h3>
+                    </div>
+                    <div class="space-y-3">
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-300">TensorFlow</span>
+                            <div class="w-24 h-2 bg-gray-700 rounded-full">
+                                <div class="w-16 h-2 bg-teal rounded-full"></div>
+                            </div>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-300">Pandas</span>
+                            <div class="w-24 h-2 bg-gray-700 rounded-full">
+                                <div class="w-20 h-2 bg-teal rounded-full"></div>
+                            </div>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-300">Scikit-learn</span>
+                            <div class="w-24 h-2 bg-gray-700 rounded-full">
+                                <div class="w-18 h-2 bg-teal rounded-full"></div>
+                            </div>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-300">Tableau</span>
+                            <div class="w-24 h-2 bg-gray-700 rounded-full">
+                                <div class="w-14 h-2 bg-teal rounded-full"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Research & Analysis -->
+                <div class="skill-card bg-white/10 p-8 rounded-xl border border-white/20">
+                    <div class="flex items-center mb-4">
+                        <div class="w-12 h-12 bg-teal/20 rounded-lg flex items-center justify-center mr-4">
+                            <svg class="w-6 h-6 text-teal" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M3 3a1 1 0 000 2v8a2 2 0 002 2h2.586l-1.293 1.293a1 1 0 101.414 1.414L10 15.414l2.293 2.293a1 1 0 001.414-1.414L12.414 15H15a2 2 0 002-2V5a1 1 0 100-2H3zm11.707 4.707a1 1 0 00-1.414-1.414L10 9.586 8.707 8.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                            </svg>
+                        </div>
+                        <h3 class="text-xl font-semibold">Research</h3>
+                    </div>
+                    <div class="space-y-3">
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-300">Econometrics</span>
+                            <div class="w-24 h-2 bg-gray-700 rounded-full">
+                                <div class="w-20 h-2 bg-teal rounded-full"></div>
+                            </div>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-300">GIS Analysis</span>
+                            <div class="w-24 h-2 bg-gray-700 rounded-full">
+                                <div class="w-18 h-2 bg-teal rounded-full"></div>
+                            </div>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-300">Statistical Modeling</span>
+                            <div class="w-24 h-2 bg-gray-700 rounded-full">
+                                <div class="w-20 h-2 bg-teal rounded-full"></div>
+                            </div>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-300">Quantum Computing</span>
+                            <div class="w-24 h-2 bg-gray-700 rounded-full">
+                                <div class="w-12 h-2 bg-teal rounded-full"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Skills Chart -->
+            <div class="bg-white/10 rounded-xl p-8 border border-white/20">
+                <h3 class="text-2xl font-semibold mb-6 text-center">Technical Proficiency Overview</h3>
+                <div id="skills-chart" style="height: 400px;"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Project Timeline Section -->
+    <section id="projects" class="py-20 relative">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="text-center mb-16">
+                <h2 class="font-display text-4xl md:text-5xl font-bold mb-6">
+                    <span class="gradient-text">Project Timeline</span>
+                </h2>
+                <p class="text-xl text-gray-300 max-w-3xl mx-auto">
+                    Key projects showcasing full-stack development, data analysis, and research capabilities
+                </p>
+            </div>
+            
+            <div class="relative">
+                <!-- Timeline Line -->
+                <div class="absolute left-1/2 transform -translate-x-1/2 w-1 h-full bg-gradient-to-b from-teal to-gold"></div>
+                
+                <!-- Timeline Items -->
+                <div class="space-y-16">
+                    <!-- Your Forest iOS App -->
+                    <div class="timeline-item flex items-center">
+                        <div class="w-1/2 pr-8 text-right">
+                            <div class="bg-white/10 p-6 rounded-xl border border-white/20">
+                                <h3 class="text-2xl font-semibold mb-2">Your Forest iOS App</h3>
+                                <p class="text-gray-300 mb-4">
+                                    Full-stack iOS application connecting real-world sustainability choices to virtual forest simulation. 
+                                    Increased user engagement by 30% through gamified environmental education.
+                                </p>
+                                <div class="flex flex-wrap gap-2 justify-end">
+                                    <span class="bg-teal/20 text-teal px-3 py-1 rounded-full text-sm">Swift</span>
+                                    <span class="bg-teal/20 text-teal px-3 py-1 rounded-full text-sm">iOS</span>
+                                    <span class="bg-teal/20 text-teal px-3 py-1 rounded-full text-sm">Game Design</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="w-12 h-12 bg-teal rounded-full flex items-center justify-center relative z-10">
+                            <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M3 4a1 1 0 011-1h4a1 1 0 010 2H6.414l2.293 2.293a1 1 0 01-1.414 1.414L5 6.414V8a1 1 0 01-2 0V4zm9 1a1 1 0 010-2h4a1 1 0 011 1v4a1 1 0 01-2 0V6.414l-2.293 2.293a1 1 0 11-1.414-1.414L13.586 5H12zm-9 7a1 1 0 012 0v1.586l2.293-2.293a1 1 0 111.414 1.414L6.414 15H8a1 1 0 010 2H4a1 1 0 01-1-1v-4zm13-1a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 010-2h1.586l-2.293-2.293a1 1 0 111.414-1.414L15 13.586V12a1 1 0 011-1z" clip-rule="evenodd"></path>
+                            </svg>
+                        </div>
+                        <div class="w-1/2 pl-8">
+                            <img src="resources/ios-app-mockup.png" alt="Your Forest iOS App" 
+                                 class="w-full max-w-sm rounded-xl shadow-lg">
+                        </div>
+                    </div>
+                    
+                    <!-- GIS Analysis -->
+                    <div class="timeline-item flex items-center">
+                        <div class="w-1/2 pr-8">
+                            <img src="resources/gis-visualization.png" alt="GIS Analysis" 
+                                 class="w-full max-w-sm rounded-xl shadow-lg">
+                        </div>
+                        <div class="w-12 h-12 bg-gold rounded-full flex items-center justify-center relative z-10">
+                            <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"></path>
+                            </svg>
+                        </div>
+                        <div class="w-1/2 pl-8">
+                            <div class="bg-white/10 p-6 rounded-xl border border-white/20">
+                                <h3 class="text-2xl font-semibold mb-2">GIS Spatial Analysis</h3>
+                                <p class="text-gray-300 mb-4">
+                                    Comprehensive geospatial analysis of Gull Lake region using R and GIS tools. 
+                                    Built R Shiny application for environmental monitoring and conservation planning.
+                                </p>
+                                <div class="flex flex-wrap gap-2">
+                                    <span class="bg-gold/20 text-gold px-3 py-1 rounded-full text-sm">R</span>
+                                    <span class="bg-gold/20 text-gold px-3 py-1 rounded-full text-sm">GIS</span>
+                                    <span class="bg-gold/20 text-gold px-3 py-1 rounded-full text-sm">Shiny</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Economic Research -->
+                    <div class="timeline-item flex items-center">
+                        <div class="w-1/2 pr-8 text-right">
+                            <div class="bg-white/10 p-6 rounded-xl border border-white/20">
+                                <h3 class="text-2xl font-semibold mb-2">Economic Research</h3>
+                                <p class="text-gray-300 mb-4">
+                                    Empirical investigation of Kuznets Curve hypothesis using 145-country panel dataset. 
+                                    Advanced econometric analysis revealing nonlinear relationships between GDP and inequality.
+                                </p>
+                                <div class="flex flex-wrap gap-2 justify-end">
+                                    <span class="bg-teal/20 text-teal px-3 py-1 rounded-full text-sm">Econometrics</span>
+                                    <span class="bg-teal/20 text-teal px-3 py-1 rounded-full text-sm">Stata</span>
+                                    <span class="bg-teal/20 text-teal px-3 py-1 rounded-full text-sm">Research</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="w-12 h-12 bg-teal rounded-full flex items-center justify-center relative z-10">
+                            <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5zM8 7a1 1 0 011-1h2a1 1 0 011 1v9a1 1 0 01-1 1H9a1 1 0 01-1-1V7zM14 4a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1h-2a1 1 0 01-1-1V4z"></path>
+                            </svg>
+                        </div>
+                        <div class="w-1/2 pl-8">
+                            <img src="resources/economic-dashboard.png" alt="Economic Research Dashboard" 
+                                 class="w-full max-w-sm rounded-xl shadow-lg">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Live Code Demo Section -->
+    <section class="py-20 relative">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="text-center mb-16">
+                <h2 class="font-display text-4xl md:text-5xl font-bold mb-6">
+                    <span class="gradient-text">Live Code Demo</span>
+                </h2>
+                <p class="text-xl text-gray-300 max-w-3xl mx-auto">
+                    Interactive Python demonstration showcasing data visualization and analysis capabilities
+                </p>
+            </div>
+            
+            <div class="grid lg:grid-cols-2 gap-12 items-center">
+                <div class="code-editor">
+                    <div class="code-header">
+                        <div class="code-dot dot-red"></div>
+                        <div class="code-dot dot-yellow"></div>
+                        <div class="code-dot dot-green"></div>
+                        <span class="ml-4 text-gray-400 text-sm">data_visualization.py</span>
+                    </div>
+                    <div class="code-content">
+<pre id="code-content"><span class="syntax-keyword">import</span> pandas <span class="syntax-keyword">as</span> pd
+<span class="syntax-keyword">import</span> matplotlib.pyplot <span class="syntax-keyword">as</span> plt
+<span class="syntax-keyword">import</span> numpy <span class="syntax-keyword">as</span> np
+
+<span class="syntax-comment"># Generate sample economic data</span>
+years = np.arange(1990, 2024)
+gdp_growth = np.random.normal(2.5, 1.2, len(years))
+income_inequality = 30 + np.cumsum(np.random.normal(0.1, 2, len(years)))
+
+<span class="syntax-comment"># Create DataFrame</span>
+data = pd.DataFrame({
+    <span class="syntax-string">'Year'</span>: years,
+    <span class="syntax-string">'GDP_Growth'</span>: gdp_growth,
+    <span class="syntax-string">'Inequality'</span>: income_inequality
+})
+
+<span class="syntax-comment"># Visualize Kuznets Curve relationship</span>
+<span class="syntax-function">plt.figure</span>(figsize=(10, 6))
+<span class="syntax-function">plt.scatter</span>(data[<span class="syntax-string">'GDP_Growth'</span>], 
+               data[<span class="syntax-string">'Inequality'</span>], 
+               alpha=0.7, c=<span class="syntax-string">'teal'</span>)
+<span class="syntax-function">plt.xlabel</span>(<span class="syntax-string">'GDP Growth Rate (%)'</span>)
+<span class="syntax-function">plt.ylabel</span>(<span class="syntax-string">'Income Inequality (Gini)'</span>)
+<span class="syntax-function">plt.title</span>(<span class="syntax-string">'Economic Growth vs Income Inequality'</span>)
+<span class="syntax-function">plt.grid</span>(True, alpha=0.3)
+<span class="syntax-function">plt.show</span>()</pre>
+                    </div>
+                </div>
+                
+                <div class="space-y-6">
+                    <div class="bg-white/10 p-6 rounded-xl border border-white/20">
+                        <h3 class="text-xl font-semibold mb-4">Interactive Analysis</h3>
+                        <p class="text-gray-300 mb-4">
+                            This demonstration shows economic research methodology used in Kuznets Curve analysis. 
+                            The code generates sample data and visualizes the relationship between GDP growth and income inequality.
+                        </p>
+                        <div class="space-y-3">
+                            <div class="flex items-center">
+                                <div class="w-3 h-3 bg-teal rounded-full mr-3"></div>
+                                <span class="text-sm">Statistical modeling with Python</span>
+                            </div>
+                            <div class="flex items-center">
+                                <div class="w-3 h-3 bg-gold rounded-full mr-3"></div>
+                                <span class="text-sm">Data visualization best practices</span>
+                            </div>
+                            <div class="flex items-center">
+                                <div class="w-3 h-3 bg-teal rounded-full mr-3"></div>
+                                <span class="text-sm">Economic research methodology</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <button onclick="runCodeDemo()" class="w-full bg-teal hover:bg-teal/90 text-white py-3 rounded-lg font-medium transition-all transform hover:scale-105">
+                        Run Analysis
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="py-12 border-t border-white/20">
+        <div class="max-w-7xl mx-auto px-6 text-center">
+            <div class="flex justify-center space-x-8 mb-6">
+                <a href="https://linkedin.com" class="text-gray-400 hover:text-teal transition-colors">
+                    <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M16.338 16.338H13.67V12.16c0-.995-.017-2.277-1.387-2.277-1.39 0-1.601 1.086-1.601 2.207v4.248H8.014v-8.59h2.559v1.174h.037c.356-.675 1.227-1.387 2.526-1.387 2.703 0 3.203 1.778 3.203 4.092v4.711zM5.005 6.575a1.548 1.548 0 11-.003-3.096 1.548 1.548 0 01.003 3.096zm-1.337 9.763H6.34v-8.59H3.667v8.59zM17.668 1H2.328C1.595 1 1 1.581 1 2.298v15.403C1 18.418 1.595 19 2.328 19h15.34c.734 0 1.332-.582 1.332-1.299V2.298C19 1.581 18.402 1 17.668 1z" clip-rule="evenodd"></path>
+                    </svg>
+                </a>
+                <a href="https://github.com" class="text-gray-400 hover:text-teal transition-colors">
+                    <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 0C4.477 0 0 4.484 0 10.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0110 4.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.203 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.942.359.31.678.921.678 1.856 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0020 10.017C20 4.484 15.522 0 10 0z" clip-rule="evenodd"></path>
+                    </svg>
+                </a>
+            </div>
+            <p class="text-gray-400 text-sm">
+                © 2024 Prasiddha Shrestha. All rights reserved.
+            </p>
+        </div>
+    </footer>
+
+    <script src="main.js"></script>
+</body>
+</html>
