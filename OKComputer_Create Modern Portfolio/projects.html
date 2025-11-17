@@ -1,0 +1,889 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Projects - Prasiddha Shrestha</title>
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    
+    <!-- Core Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.4/dist/js/splide.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.4/dist/css/splide.min.css" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'navy': '#1a1f36',
+                        'teal': '#4a9b8e',
+                        'gold': '#d4af37',
+                        'charcoal': '#2c3e50'
+                    },
+                    fontFamily: {
+                        'display': ['Playfair Display', 'serif'],
+                        'body': ['Inter', 'sans-serif'],
+                        'mono': ['JetBrains Mono', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        body { 
+            background: linear-gradient(135deg, #1a1f36 0%, #2c3e50 100%);
+            min-height: 100vh;
+        }
+        
+        .gradient-text {
+            background: linear-gradient(45deg, #4a9b8e, #d4af37);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .nav-link {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: -100%;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, #4a9b8e, #d4af37);
+            transition: left 0.3s ease;
+        }
+        
+        .nav-link:hover::after {
+            left: 0;
+        }
+        
+        .project-card {
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            cursor: pointer;
+        }
+        
+        .project-card:hover {
+            transform: translateY(-10px) rotateX(5deg);
+            box-shadow: 0 25px 50px rgba(74, 155, 142, 0.3);
+        }
+        
+        .filter-btn {
+            transition: all 0.3s ease;
+        }
+        
+        .filter-btn.active {
+            background: linear-gradient(45deg, #4a9b8e, #d4af37);
+            color: white;
+        }
+        
+        .project-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+        }
+        
+        .project-modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-content {
+            background: linear-gradient(135deg, #1a1f36 0%, #2c3e50 100%);
+            border-radius: 20px;
+            max-width: 90vw;
+            max-height: 90vh;
+            overflow-y: auto;
+            border: 1px solid rgba(74, 155, 142, 0.3);
+        }
+        
+        .code-demo {
+            background: #0d1117;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        
+        .code-header {
+            background: #161b22;
+            padding: 12px 16px;
+            border-bottom: 1px solid #30363d;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .code-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+        
+        .dot-red { background: #ff5f56; }
+        .dot-yellow { background: #ffbd2e; }
+        .dot-green { background: #27ca3f; }
+        
+        .code-content {
+            padding: 20px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 14px;
+            line-height: 1.6;
+            color: #e6edf3;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .syntax-keyword { color: #ff7b72; }
+        .syntax-string { color: #a5d6ff; }
+        .syntax-comment { color: #8b949e; }
+        .syntax-function { color: #d2a8ff; }
+        
+        .demo-output {
+            background: #0d1117;
+            border: 1px solid #30363d;
+            border-radius: 8px;
+            padding: 16px;
+            margin-top: 16px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 14px;
+            color: #e6edf3;
+        }
+        
+        .impact-metric {
+            background: rgba(74, 155, 142, 0.1);
+            border: 1px solid rgba(74, 155, 142, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .metric-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #4a9b8e;
+            display: block;
+        }
+        
+        .tech-stack-item {
+            background: rgba(74, 155, 142, 0.2);
+            color: #4a9b8e;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body class="font-body text-white">
+    <!-- Navigation -->
+    <nav class="fixed top-0 left-0 right-0 z-50 bg-navy/80 backdrop-blur-md border-b border-teal/20">
+        <div class="max-w-7xl mx-auto px-6 py-4">
+            <div class="flex items-center justify-between">
+                <div class="font-display text-2xl font-bold gradient-text">
+                    <a href="index.html">Prasiddha Shrestha</a>
+                </div>
+                <div class="hidden md:flex space-x-8">
+                    <a href="index.html" class="nav-link text-white hover:text-teal transition-colors">Home</a>
+                    <a href="about.html" class="nav-link text-white hover:text-teal transition-colors">About</a>
+                    <a href="projects.html" class="nav-link text-teal font-medium">Projects</a>
+                    <a href="contact.html" class="nav-link text-white hover:text-teal transition-colors">Contact</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="pt-32 pb-20">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="text-center mb-16">
+                <h1 class="font-display text-5xl md:text-6xl font-bold mb-6">
+                    <span class="gradient-text">My Projects</span>
+                </h1>
+                <p class="text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed">
+                    A showcase of innovative solutions spanning iOS development, data analysis, 
+                    and economic research, each project demonstrating technical excellence and social impact.
+                </p>
+            </div>
+            
+            <!-- Project Filters -->
+            <div class="flex flex-wrap justify-center gap-4 mb-16">
+                <button class="filter-btn active px-6 py-3 rounded-full border border-teal text-teal font-medium" data-filter="all">
+                    All Projects
+                </button>
+                <button class="filter-btn px-6 py-3 rounded-full border border-teal text-teal font-medium" data-filter="mobile">
+                    Mobile Development
+                </button>
+                <button class="filter-btn px-6 py-3 rounded-full border border-teal text-teal font-medium" data-filter="data">
+                    Data Science
+                </button>
+                <button class="filter-btn px-6 py-3 rounded-full border border-teal text-teal font-medium" data-filter="research">
+                    Research
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Projects Grid -->
+    <section class="py-20">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="grid lg:grid-cols-3 gap-8" id="projects-grid">
+                <!-- Your Forest iOS App -->
+                <div class="project-card bg-white/10 p-8 rounded-xl border border-white/20" data-category="mobile" onclick="openProjectModal('forest-app')">
+                    <div class="mb-6">
+                        <img src="resources/ios-app-mockup.png" alt="Your Forest iOS App" class="w-full h-48 object-cover rounded-lg">
+                    </div>
+                    <div class="space-y-4">
+                        <div>
+                            <h3 class="text-2xl font-semibold mb-2">Your Forest iOS App</h3>
+                            <p class="text-gray-300">
+                                Full-stack iOS application connecting real-world sustainability choices to virtual forest simulation.
+                            </p>
+                        </div>
+                        <div class="flex flex-wrap gap-2">
+                            <span class="tech-stack-item">Swift</span>
+                            <span class="tech-stack-item">iOS</span>
+                            <span class="tech-stack-item">Game Design</span>
+                        </div>
+                        <div class="flex items-center text-teal">
+                            <span class="text-sm">Click to explore</span>
+                            <svg class="w-4 h-4 ml-2" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- GIS Analysis Platform -->
+                <div class="project-card bg-white/10 p-8 rounded-xl border border-white/20" data-category="data" onclick="openProjectModal('gis-platform')">
+                    <div class="mb-6">
+                        <img src="resources/gis-visualization.png" alt="GIS Analysis Platform" class="w-full h-48 object-cover rounded-lg">
+                    </div>
+                    <div class="space-y-4">
+                        <div>
+                            <h3 class="text-2xl font-semibold mb-2">GIS Spatial Analysis</h3>
+                            <p class="text-gray-300">
+                                Comprehensive geospatial analysis platform for environmental monitoring and conservation planning.
+                            </p>
+                        </div>
+                        <div class="flex flex-wrap gap-2">
+                            <span class="tech-stack-item">R</span>
+                            <span class="tech-stack-item">GIS</span>
+                            <span class="tech-stack-item">Shiny</span>
+                        </div>
+                        <div class="flex items-center text-teal">
+                            <span class="text-sm">Click to explore</span>
+                            <svg class="w-4 h-4 ml-2" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Economic Research Dashboard -->
+                <div class="project-card bg-white/10 p-8 rounded-xl border border-white/20" data-category="research" onclick="openProjectModal('economic-research')">
+                    <div class="mb-6">
+                        <img src="resources/economic-dashboard.png" alt="Economic Research Dashboard" class="w-full h-48 object-cover rounded-lg">
+                    </div>
+                    <div class="space-y-4">
+                        <div>
+                            <h3 class="text-2xl font-semibold mb-2">Economic Research Dashboard</h3>
+                            <p class="text-gray-300">
+                                Interactive dashboard analyzing Kuznets Curve hypothesis with comprehensive international data.
+                            </p>
+                        </div>
+                        <div class="flex flex-wrap gap-2">
+                            <span class="tech-stack-item">Econometrics</span>
+                            <span class="tech-stack-item">Stata</span>
+                            <span class="tech-stack-item">Research</span>
+                        </div>
+                        <div class="flex items-center text-teal">
+                            <span class="text-sm">Click to explore</span>
+                            <svg class="w-4 h-4 ml-2" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Project Modals -->
+    <!-- Your Forest App Modal -->
+    <div id="forest-app-modal" class="project-modal">
+        <div class="modal-content p-8 m-4">
+            <div class="flex justify-between items-start mb-8">
+                <div>
+                    <h2 class="font-display text-4xl font-bold mb-4">Your Forest iOS App</h2>
+                    <p class="text-xl text-gray-300">Full-stack sustainability application with gamified environmental education</p>
+                </div>
+                <button onclick="closeProjectModal('forest-app-modal')" class="text-gray-400 hover:text-white text-2xl">×</button>
+            </div>
+            
+            <div class="grid lg:grid-cols-2 gap-12">
+                <div class="space-y-8">
+                    <div>
+                        <h3 class="text-2xl font-semibold mb-4">Project Overview</h3>
+                        <p class="text-gray-300 mb-4">
+                            Your Forest is an innovative iOS application that connects real-world sustainability choices to a virtual 
+                            forest simulation, creating an engaging platform for environmental education and behavior change.
+                        </p>
+                        <div class="grid grid-cols-3 gap-4 mb-6">
+                            <div class="impact-metric">
+                                <span class="metric-value">30%</span>
+                                <span class="text-sm text-gray-400">User Engagement Increase</span>
+                            </div>
+                            <div class="impact-metric">
+                                <span class="metric-value">1000+</span>
+                                <span class="text-sm text-gray-400">Active Users</span>
+                            </div>
+                            <div class="impact-metric">
+                                <span class="metric-value">4.8</span>
+                                <span class="text-sm text-gray-400">App Store Rating</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <h3 class="text-2xl font-semibold mb-4">Key Features</h3>
+                        <ul class="space-y-3 text-gray-300">
+                            <li class="flex items-start">
+                                <svg class="w-5 h-5 text-teal mr-3 mt-1 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                </svg>
+                                <span>Interactive product input interface with sustainability scoring</span>
+                            </li>
+                            <li class="flex items-start">
+                                <svg class="w-5 h-5 text-teal mr-3 mt-1 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                </svg>
+                                <span>Dynamic virtual forest growth based on user behavior</span>
+                            </li>
+                            <li class="flex items-start">
+                                <svg class="w-5 h-5 text-teal mr-3 mt-1 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                </svg>
+                                <span>Customizable product categories and personalized experiences</span>
+                            </li>
+                            <li class="flex items-start">
+                                <svg class="w-5 h-5 text-teal mr-3 mt-1 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                </svg>
+                                <span>Real-time feedback and reward systems</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="space-y-8">
+                    <div>
+                        <h3 class="text-2xl font-semibold mb-4">Technology Stack</h3>
+                        <div class="flex flex-wrap gap-3 mb-6">
+                            <span class="tech-stack-item">Swift</span>
+                            <span class="tech-stack-item">SwiftUI</span>
+                            <span class="tech-stack-item">CoreData</span>
+                            <span class="tech-stack-item">Combine</span>
+                            <span class="tech-stack-item">Xcode</span>
+                            <span class="tech-stack-item">TestFlight</span>
+                        </div>
+                    </div>
+                    
+                    <div class="code-demo">
+                        <div class="code-header">
+                            <div class="code-dot dot-red"></div>
+                            <div class="code-dot dot-yellow"></div>
+                            <div class="code-dot dot-green"></div>
+                            <span class="ml-4 text-gray-400 text-sm">SustainabilityScoring.swift</span>
+                        </div>
+                        <div class="code-content">
+<pre><span class="syntax-keyword">class</span> SustainabilityScorer {
+    <span class="syntax-keyword">func</span> calculateProductScore(product: Product) -> Double {
+        <span class="syntax-comment">// Distance-based scoring for food miles</span>
+        let distanceScore = calculateDistanceScore(miles: product.foodMiles)
+        
+        <span class="syntax-comment">// Category-based sustainability weighting</span>
+        let categoryMultiplier = getCategoryMultiplier(category: product.category)
+        
+        <span class="syntax-comment">// Combined sustainability score</span>
+        let baseScore = distanceScore * categoryMultiplier
+        
+        <span class="syntax-keyword">return</span> min(max(baseScore, 0.0), 100.0)
+    }
+    
+    <span class="syntax-keyword">private</span> <span class="syntax-keyword">func</span> calculateDistanceScore(miles: Double) -> Double {
+        <span class="syntax-comment">// Exponential decay based on distance</span>
+        <span class="syntax-keyword">return</span> 100.0 * exp(-miles / 1000.0)
+    }
+}</pre>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <h3 class="text-2xl font-semibold mb-4">Development Process</h3>
+                        <div class="space-y-4">
+                            <div class="flex items-start">
+                                <div class="w-8 h-8 bg-teal rounded-full flex items-center justify-center text-sm font-bold mr-4 mt-1">1</div>
+                                <div>
+                                    <h4 class="font-semibold">Research & Design</h4>
+                                    <p class="text-gray-400 text-sm">Conducted user research and created interaction design specifications</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start">
+                                <div class="w-8 h-8 bg-teal rounded-full flex items-center justify-center text-sm font-bold mr-4 mt-1">2</div>
+                                <div>
+                                    <h4 class="font-semibold">Development</h4>
+                                    <p class="text-gray-400 text-sm">Built full-stack iOS application with game mechanics and sustainability algorithms</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start">
+                                <div class="w-8 h-8 bg-teal rounded-full flex items-center justify-center text-sm font-bold mr-4 mt-1">3</div>
+                                <div>
+                                    <h4 class="font-semibold">Testing & Deployment</h4>
+                                    <p class="text-gray-400 text-sm">Beta testing with TestFlight and App Store deployment</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- GIS Platform Modal -->
+    <div id="gis-platform-modal" class="project-modal">
+        <div class="modal-content p-8 m-4">
+            <div class="flex justify-between items-start mb-8">
+                <div>
+                    <h2 class="font-display text-4xl font-bold mb-4">GIS Spatial Analysis Platform</h2>
+                    <p class="text-xl text-gray-300">Comprehensive geospatial analysis for environmental monitoring</p>
+                </div>
+                <button onclick="closeProjectModal('gis-platform-modal')" class="text-gray-400 hover:text-white text-2xl">×</button>
+            </div>
+            
+            <div class="grid lg:grid-cols-2 gap-12">
+                <div class="space-y-8">
+                    <div>
+                        <h3 class="text-2xl font-semibold mb-4">Project Overview</h3>
+                        <p class="text-gray-300 mb-4">
+                            A comprehensive GIS analysis platform developed for the Gull Lake region, providing environmental 
+                            monitoring capabilities and conservation planning tools through advanced spatial data analysis.
+                        </p>
+                        <div class="grid grid-cols-3 gap-4 mb-6">
+                            <div class="impact-metric">
+                                <span class="metric-value">500+</span>
+                                <span class="text-sm text-gray-400">Data Points Analyzed</span>
+                            </div>
+                            <div class="impact-metric">
+                                <span class="metric-value">15</span>
+                                <span class="text-sm text-gray-400">Water Bodies Mapped</span>
+                            </div>
+                            <div class="impact-metric">
+                                <span class="metric-value">95%</span>
+                                <span class="text-sm text-gray-400">Accuracy Rate</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <h3 class="text-2xl font-semibold mb-4">Key Features</h3>
+                        <ul class="space-y-3 text-gray-300">
+                            <li class="flex items-start">
+                                <svg class="w-5 h-5 text-gold mr-3 mt-1 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                </svg>
+                                <span>Interactive R Shiny application for data visualization</span>
+                            </li>
+                            <li class="flex items-start">
+                                <svg class="w-5 h-5 text-gold mr-3 mt-1 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                </svg>
+                                <span>Spatial interpolation and environmental indicator analysis</span>
+                            </li>
+                            <li class="flex items-start">
+                                <svg class="w-5 h-5 text-gold mr-3 mt-1 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                </svg>
+                                <span>Comprehensive data cleaning and wrangling pipeline</span>
+                            </li>
+                            <li class="flex items-start">
+                                <svg class="w-5 h-5 text-gold mr-3 mt-1 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                </svg>
+                                <span>Land cover and water quality influence evaluation</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="space-y-8">
+                    <div>
+                        <h3 class="text-2xl font-semibold mb-4">Technology Stack</h3>
+                        <div class="flex flex-wrap gap-3 mb-6">
+                            <span class="tech-stack-item">R</span>
+                            <span class="tech-stack-item">ArcGIS</span>
+                            <span class="tech-stack-item">Shiny</span>
+                            <span class="tech-stack-item">Spatial Analysis</span>
+                            <span class="tech-stack-item">Leaflet</span>
+                            <span class="tech-stack-item">GDAL</span>
+                        </div>
+                    </div>
+                    
+                    <div class="code-demo">
+                        <div class="code-header">
+                            <div class="code-dot dot-red"></div>
+                            <div class="code-dot dot-yellow"></div>
+                            <div class="code-dot dot-green"></div>
+                            <span class="ml-4 text-gray-400 text-sm">spatial_analysis.R</span>
+                        </div>
+                        <div class="code-content">
+<pre><span class="syntax-comment"># Spatial interpolation for environmental indicators</span>
+library(sp)
+library(gstat)
+
+<span class="syntax-comment"># Create spatial points from water quality data</span>
+water_points <- SpatialPointsDataFrame(
+  coords = water_data[, c("longitude", "latitude")],
+  data = water_data
+)
+
+<span class="syntax-comment"># Perform kriging interpolation</span>
+krige_model <- krige(
+  formula = water_quality ~ 1,
+  locations = water_points,
+  newdata = grid_data
+)
+
+<span class="syntax-comment"># Visualize results in Shiny app</span>
+output$map <- renderLeaflet({
+  leaflet() %>%
+    addTiles() %>%
+    addRasterImage(krige_model, colors = "viridis") %>%
+    addMarkers(data = water_points, popup = ~site_name)
+})</pre>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <h3 class="text-2xl font-semibold mb-4">Research Impact</h3>
+                        <div class="space-y-4">
+                            <div class="bg-white/10 p-4 rounded-lg">
+                                <h4 class="font-semibold text-gold mb-2">Conservation Planning</h4>
+                                <p class="text-gray-400 text-sm">Identified key regions requiring conservation efforts and sustainable land management strategies</p>
+                            </div>
+                            <div class="bg-white/10 p-4 rounded-lg">
+                                <h4 class="font-semibold text-gold mb-2">Environmental Monitoring</h4>
+                                <p class="text-gray-400 text-sm">Provided insights into hydrology, ecosystem health, and conservation needs for the Gull Lake region</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Economic Research Modal -->
+    <div id="economic-research-modal" class="project-modal">
+        <div class="modal-content p-8 m-4">
+            <div class="flex justify-between items-start mb-8">
+                <div>
+                    <h2 class="font-display text-4xl font-bold mb-4">Economic Research Dashboard</h2>
+                    <p class="text-xl text-gray-300">Kuznets Curve analysis with international panel data</p>
+                </div>
+                <button onclick="closeProjectModal('economic-research-modal')" class="text-gray-400 hover:text-white text-2xl">×</button>
+            </div>
+            
+            <div class="grid lg:grid-cols-2 gap-12">
+                <div class="space-y-8">
+                    <div>
+                        <h3 class="text-2xl font-semibold mb-4">Project Overview</h3>
+                        <p class="text-gray-300 mb-4">
+                            Comprehensive empirical investigation into the Kuznets Curve hypothesis, analyzing the nonlinear 
+                            relationship between GDP per capita and income inequality using advanced econometric techniques 
+                            and a comprehensive 145-country panel dataset.
+                        </p>
+                        <div class="grid grid-cols-3 gap-4 mb-6">
+                            <div class="impact-metric">
+                                <span class="metric-value">145</span>
+                                <span class="text-sm text-gray-400">Countries Analyzed</span>
+                            </div>
+                            <div class="impact-metric">
+                                <span class="metric-value">25</span>
+                                <span class="text-sm text-gray-400">Years of Data</span>
+                            </div>
+                            <div class="impact-metric">
+                                <span class="metric-value">3</span>
+                                <span class="text-sm text-gray-400">Research Papers</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <h3 class="text-2xl font-semibold mb-4">Research Methodology</h3>
+                        <ul class="space-y-3 text-gray-300">
+                            <li class="flex items-start">
+                                <svg class="w-5 h-5 text-teal mr-3 mt-1 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                </svg>
+                                <span>Panel data econometrics with fixed and random effects models</span>
+                            </li>
+                            <li class="flex items-start">
+                                <svg class="w-5 h-5 text-teal mr-3 mt-1 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                </svg>
+                                <span>Nonlinear regression analysis and polynomial specifications</span>
+                            </li>
+                            <li class="flex items-start">
+                                <svg class="w-5 h-5 text-teal mr-3 mt-1 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                </svg>
+                                <span>Robustness testing with alternative specifications</span>
+                            </li>
+                            <li class="flex items-start">
+                                <svg class="w-5 h-5 text-teal mr-3 mt-1 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                </svg>
+                                <span>Cross-sectional and temporal analysis</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="space-y-8">
+                    <div>
+                        <h3 class="text-2xl font-semibold mb-4">Technology Stack</h3>
+                        <div class="flex flex-wrap gap-3 mb-6">
+                            <span class="tech-stack-item">Stata</span>
+                            <span class="tech-stack-item">R</span>
+                            <span class="tech-stack-item">Python</span>
+                            <span class="tech-stack-item">Econometrics</span>
+                            <span class="tech-stack-item">Panel Data</span>
+                            <span class="tech-stack-item">Statistical Analysis</span>
+                        </div>
+                    </div>
+                    
+                    <div class="code-demo">
+                        <div class="code-header">
+                            <div class="code-dot dot-red"></div>
+                            <div class="code-dot dot-yellow"></div>
+                            <div class="code-dot dot-green"></div>
+                            <span class="ml-4 text-gray-400 text-sm">kuznets_analysis.do</span>
+                        </div>
+                        <div class="code-content">
+<pre><span class="syntax-comment">* Kuznets Curve Analysis - Stata Code</span>
+clear all
+use "harvard_dataverse_panel.dta", clear
+
+<span class="syntax-comment">* Set panel structure</span>
+xtset country_id year
+
+<span class="syntax-comment">* Polynomial specification for Kuznets Curve</span>
+generate gdp_sq = gdp_per_capita^2
+
+<span class="syntax-comment">* Fixed effects regression</span>
+xtreg gini_coefficient gdp_per_capita gdp_sq control_vars, fe robust
+
+<span class="syntax-comment">* Test for inverted U-shape</span>
+test gdp_per_capita = -gdp_sq
+
+<span class="syntax-comment">* Marginal effects analysis</span>
+margins, dydx(gdp_per_capita) atmeans
+
+<span class="syntax-comment">* Robustness checks</span>
+xtreg gini_coefficient gdp_per_capita gdp_sq control_vars, re robust</pre>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <h3 class="text-2xl font-semibold mb-4">Key Findings</h3>
+                        <div class="space-y-4">
+                            <div class="bg-white/10 p-4 rounded-lg">
+                                <h4 class="font-semibold text-teal mb-2">Inverted U-Curve Confirmation</h4>
+                                <p class="text-gray-400 text-sm">Confirmed the Kuznets Curve hypothesis with statistically significant results across multiple model specifications</p>
+                            </div>
+                            <div class="bg-white/10 p-4 rounded-lg">
+                                <h4 class="font-semibold text-teal mb-2">Policy Implications</h4>
+                                <p class="text-gray-400 text-sm">Findings suggest that economic development initially increases inequality but eventually leads to more equitable distributions</p>
+                            </div>
+                            <div class="bg-white/10 p-4 rounded-lg">
+                                <h4 class="font-semibold text-teal mb-2">Cross-Country Variations</h4>
+                                <p class="text-gray-400 text-sm">Identified significant variations in the relationship across different regions and development stages</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="py-12 border-t border-white/20">
+        <div class="max-w-7xl mx-auto px-6 text-center">
+            <div class="flex justify-center space-x-8 mb-6">
+                <a href="https://linkedin.com" class="text-gray-400 hover:text-teal transition-colors">
+                    <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M16.338 16.338H13.67V12.16c0-.995-.017-2.277-1.387-2.277-1.39 0-1.601 1.086-1.601 2.207v4.248H8.014v-8.59h2.559v1.174h.037c.356-.675 1.227-1.387 2.526-1.387 2.703 0 3.203 1.778 3.203 4.092v4.711zM5.005 6.575a1.548 1.548 0 11-.003-3.096 1.548 1.548 0 01.003 3.096zm-1.337 9.763H6.34v-8.59H3.667v8.59zM17.668 1H2.328C1.595 1 1 1.581 1 2.298v15.403C1 18.418 1.595 19 2.328 19h15.34c.734 0 1.332-.582 1.332-1.299V2.298C19 1.581 18.402 1 17.668 1z" clip-rule="evenodd"></path>
+                    </svg>
+                </a>
+                <a href="https://github.com" class="text-gray-400 hover:text-teal transition-colors">
+                    <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 0C4.477 0 0 4.484 0 10.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0110 4.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.203 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.942.359.31.678.921.678 1.856 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0020 10.017C20 4.484 15.522 0 10 0z" clip-rule="evenodd"></path>
+                    </svg>
+                </a>
+            </div>
+            <p class="text-gray-400 text-sm">
+                © 2024 Prasiddha Shrestha. All rights reserved.
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        // Project filtering
+        document.addEventListener('DOMContentLoaded', function() {
+            const filterButtons = document.querySelectorAll('.filter-btn');
+            const projectCards = document.querySelectorAll('.project-card');
+            
+            filterButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const filter = this.getAttribute('data-filter');
+                    
+                    // Update active button
+                    filterButtons.forEach(btn => btn.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // Filter projects
+                    projectCards.forEach(card => {
+                        const category = card.getAttribute('data-category');
+                        if (filter === 'all' || category === filter) {
+                            card.style.display = 'block';
+                            anime({
+                                targets: card,
+                                opacity: [0, 1],
+                                translateY: [20, 0],
+                                duration: 500,
+                                easing: 'easeOutQuart'
+                            });
+                        } else {
+                            anime({
+                                targets: card,
+                                opacity: [1, 0],
+                                translateY: [0, -20],
+                                duration: 300,
+                                easing: 'easeInQuart',
+                                complete: () => {
+                                    card.style.display = 'none';
+                                }
+                            });
+                        }
+                    });
+                });
+            });
+        });
+        
+        // Modal functionality
+        function openProjectModal(projectId) {
+            const modal = document.getElementById(projectId + '-modal');
+            if (modal) {
+                modal.classList.add('active');
+                document.body.style.overflow = 'hidden';
+                
+                // Animate modal content
+                anime({
+                    targets: modal.querySelector('.modal-content'),
+                    scale: [0.8, 1],
+                    opacity: [0, 1],
+                    duration: 400,
+                    easing: 'easeOutQuart'
+                });
+            }
+        }
+        
+        function closeProjectModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                anime({
+                    targets: modal.querySelector('.modal-content'),
+                    scale: [1, 0.8],
+                    opacity: [1, 0],
+                    duration: 300,
+                    easing: 'easeInQuart',
+                    complete: () => {
+                        modal.classList.remove('active');
+                        document.body.style.overflow = 'auto';
+                    }
+                });
+            }
+        }
+        
+        // Close modal on background click
+        document.querySelectorAll('.project-modal').forEach(modal => {
+            modal.addEventListener('click', function(e) {
+                if (e.target === this) {
+                    closeProjectModal(this.id);
+                }
+            });
+        });
+        
+        // Close modal on escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                document.querySelectorAll('.project-modal.active').forEach(modal => {
+                    closeProjectModal(modal.id);
+                });
+            }
+        });
+        
+        // Navigation background on scroll
+        window.addEventListener('scroll', () => {
+            const nav = document.querySelector('nav');
+            if (window.scrollY > 100) {
+                nav.classList.add('bg-navy/90');
+                nav.classList.remove('bg-navy/80');
+            } else {
+                nav.classList.add('bg-navy/80');
+                nav.classList.remove('bg-navy/90');
+            }
+        });
+        
+        // Animate project cards on scroll
+        document.addEventListener('DOMContentLoaded', function() {
+            const projectCards = document.querySelectorAll('.project-card');
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        anime({
+                            targets: entry.target,
+                            translateY: [50, 0],
+                            opacity: [0, 1],
+                            duration: 600,
+                            easing: 'easeOutQuart'
+                        });
+                    }
+                });
+            }, { threshold: 0.1 });
+            
+            projectCards.forEach(card => {
+                observer.observe(card);
+            });
+        });
+    </script>
+</body>
+</html>
